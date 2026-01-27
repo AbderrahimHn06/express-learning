@@ -8,7 +8,10 @@ import routers from "./routes/index.mjs";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 
+import dotenv from "dotenv";
+
 // MiddleWares
+dotenv.config();
 app.use(express.json());
 app.use(cookieParser("SECRET"));
 app.use(
