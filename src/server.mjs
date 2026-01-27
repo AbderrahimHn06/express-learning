@@ -23,15 +23,6 @@ app.use(
 );
 app.use("/api", routers);
 
-app.get("/", (req, res) => {
-  req.session.user_id = "12345";
-  req.session.role = "manager";
-  res.status(200).send({
-    sessionId: req.sessionID,
-    session: req.session,
-  });
-});
-
 // Listner
 app.listen(Port, () => {
   console.log("Running in Port: ", Port);
