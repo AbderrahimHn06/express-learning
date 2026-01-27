@@ -25,18 +25,7 @@ const loginShema = {
 
 export const loginValidation = checkSchema(loginShema);
 
-export const signUpValidation = checkSchema({
-  ...loginShema,
-  role: {
-    notEmpty: {
-      errorMessage: "Role is required",
-    },
-    isIn: {
-      options: [["customer", "driver", "admin"]],
-      errorMessage: "Role must be one of: customer, driver, admin",
-    },
-  },
-});
+export const signUpValidation = checkSchema(loginShema);
 
 export const authValidationResultHandler = (req, res, next) => {
   const errors = validationResult(req);

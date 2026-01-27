@@ -1,22 +1,9 @@
 import { supabase } from "../db/supabase.mjs";
+import bcrypt from "bcrypt";
 
-export const hashPassword = (password) => {
-  const salt = bcrypt.genSaltSync(10);
-  return brcypt.hashSync(password, salt);
-};
-
-export const createUser = async (username, password) => {
-  const hashedPassword = hashPassword(password);
-  const { data, error } = await supabase
-    .from("users")
-    .insert({
-      username,
-      password: hashedPassword,
-    })
-    .select("id, username, role")
-    .single();
-
-  return { data, error };
+export const hashPassword = async (password) => {
+  const salt = await bcrypt.genSalt(10);
+  return await bcrypt.hash(password, salt);
 };
 
 export const findUserByUsername = async (username) => {

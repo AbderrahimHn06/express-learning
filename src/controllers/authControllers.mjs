@@ -1,4 +1,5 @@
-import { createUser, findUserByUsername } from "../utils/helpers.mjs";
+import { supabase } from "../db/supabase.mjs";
+import { findUserByUsername, hashPassword } from "../utils/helpers.mjs";
 import passport from "passport";
 
 // Controllers
@@ -6,25 +7,44 @@ export const signUpController = async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const { user: existingUser } = await findUserByUsername(username);
+    const { data: existingUser, error: findError } =
+      await findUserByUsername(username);
+
     if (existingUser) {
       return res.status(409).json({ message: "User already exists" });
     }
-    const { data: user, error } = await createUser(username, password);
-    if (error) {
-      return res.status(404).send({ message: "Error creating user", error });
+
+    const hashedPassword = await hashPassword(password);
+
+    const { data: user, error: insertError } = await supabase
+      .from("users")
+      .insert({
+        username,
+        password: hashedPassword,
+        role: "customer",
+      })
+      .select("id, username, role")
+      .single();
+
+    if (insertError) {
+      console.error("Supabase insert error:", insertError);
+      return res.status(500).json({
+        message: "Error creating user",
+        details: insertError.message,
+      });
     }
 
-    return res.status(201).send(user);
+    return res.status(201).json(user);
   } catch (err) {
-    return res.status(500).json({ message: "Server error", error: err });
+    console.error("Signup controller crash:", err);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
 export const logIncontroller = (req, res) => {
   passport.authenticate("local", (err, user) => {
     if (err) {
-      return res.status(500).json({ message: "Server error" });
+      return res.status(500).json({ message: "Bad Credentials" });
     }
 
     if (!user) {
