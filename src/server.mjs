@@ -7,6 +7,8 @@ const SECRET = process.env.SECRET;
 import routers from "./routes/index.mjs";
 import cookieParser from "cookie-parser";
 import session from "express-session";
+import passport from "passport";
+import "./strategies/localStrategy.mjs";
 
 import dotenv from "dotenv";
 
@@ -24,6 +26,9 @@ app.use(
     },
   }),
 );
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use("/api", routers);
 
 // Listner
