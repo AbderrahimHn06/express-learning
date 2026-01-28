@@ -3,8 +3,13 @@ import { findUserByUsername, hashPassword } from "../utils/helpers.mjs";
 import passport from "passport";
 
 // Controllers
-export const signUpController = async (req, res) => {
-  const { username, password } = req.body;
+export const signUpController = async (req, res, next) => {
+  const { username, password, role } = req.body;
+  if (role && (req.user?.role !== "admin" || !req.user)) {
+    return res
+      .status(403)
+      .json({ message: "You're not able to customize the role" });
+  }
 
   try {
     const { data: existingUser, error: findError } =
@@ -21,7 +26,7 @@ export const signUpController = async (req, res) => {
       .insert({
         username,
         password: hashedPassword,
-        role: "customer",
+        role: role || "customer",
       })
       .select("id, username, role")
       .single();
@@ -33,8 +38,8 @@ export const signUpController = async (req, res) => {
         details: insertError.message,
       });
     }
-
-    return res.status(201).json(user);
+    // Here we used next for the login controller to handle login after signup
+    role ? res.status(201).json({ message: "User created", user }) : next();
   } catch (err) {
     console.error("Signup controller crash:", err);
     return res.status(500).json({ message: "Server error" });

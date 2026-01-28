@@ -18,6 +18,7 @@ router.post(
   signUpValidation,
   authValidationResultHandler,
   signUpController,
+  logIncontroller,
 );
 
 router.post(
