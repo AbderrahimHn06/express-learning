@@ -33,13 +33,23 @@ passport.use(
     async (username, password, done) => {
       try {
         const { user, error } = await findUserByUsername(username);
-        if (error || !user || !bcrypt.compareSync(password, user.password)) {
-          return done(error, null, { message: "Bad Credentials" });
+
+        if (error) {
+          return done(error);
+        }
+
+        if (!user) {
+          return done(null, false, { message: "Bad credentials" });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          return done(null, false, { message: "Bad credentials" });
         }
 
         return done(null, user);
       } catch (err) {
-        done(err, null);
+        return done(err);
       }
     },
   ),

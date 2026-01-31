@@ -53,7 +53,7 @@ export const logIncontroller = (req, res) => {
     }
 
     if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Bad credentials" });
     }
 
     req.login(user, (err) => {

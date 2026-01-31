@@ -7,18 +7,23 @@ const SECRET = process.env.SECRET;
 import routers from "./routes/index.mjs";
 import cookieParser from "cookie-parser";
 import session from "express-session";
+
 import passport from "passport";
 import "./strategies/localStrategy.mjs";
 
-import dotenv from "dotenv";
+import { RedisStore } from "connect-redis";
+import { redis } from "./db/redis.mjs";
+
+import "dotenv/config";
+
 import { supabase } from "./db/supabase.mjs";
 
 // MiddleWares
-dotenv.config();
 app.use(express.json());
 app.use(cookieParser("SECRET"));
 app.use(
   session({
+    store: new RedisStore({ client: redis }),
     secret: SECRET,
     saveUninitialized: false,
     resave: false,
