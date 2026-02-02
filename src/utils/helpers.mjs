@@ -12,7 +12,7 @@ export const createUser = async (userData) => {
     .insert({
       username: userData.username,
       provider: userData.provider || null,
-      provider_id: userData.providerId || null,
+      provider_id: userData.provider_id || null,
       role: userData.role || "customer",
       password: userData.password
         ? await hashPassword(userData.password)

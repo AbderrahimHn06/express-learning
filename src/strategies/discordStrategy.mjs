@@ -35,7 +35,7 @@ export default passport.use(
         profile.username,
       );
       if (findingError) {
-        done(findingError, null);
+        return done(findingError, null);
       }
       if (user) {
         return done(null, user);
@@ -43,7 +43,7 @@ export default passport.use(
       const { user: newUser, error: creatingError } = await createUser({
         username: profile.username,
         provider: "discord",
-        providerId: profile.id,
+        provider_id: profile.id,
         role: "customer",
       });
 

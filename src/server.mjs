@@ -13,6 +13,7 @@ import compression from "compression";
 import passport from "passport";
 import "./strategies/localStrategy.mjs";
 import "./strategies/discordStrategy.mjs";
+import "./strategies/githubStrategy.mjs";
 
 import { RedisStore } from "connect-redis";
 import { redis } from "./db/redis.mjs";

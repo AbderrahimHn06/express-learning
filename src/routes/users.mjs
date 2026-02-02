@@ -46,4 +46,21 @@ router.get("/discord/success", (req, res) => {
 router.get("/discord/failed", (req, res) => {
   res.send("Discord authentication Failed");
 });
+
+// GitHub Auth Routes
+router.get("/github", passport.authenticate("github"));
+router.get(
+  "/github/callback",
+  passport.authenticate("github", {
+    failureRedirect: "/api/auth/github/failed",
+    successRedirect: "/api/auth/github/success",
+  }),
+);
+
+router.get("/github/success", (req, res) => {
+  res.send("GitHub authentication successful\n" + JSON.stringify(req.user));
+});
+router.get("/github/failed", (req, res) => {
+  res.send("GitHub authentication Failed");
+});
 export default router;
