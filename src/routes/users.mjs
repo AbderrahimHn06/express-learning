@@ -1,4 +1,5 @@
 import { Router } from "express";
+import passport from "passport";
 // Controllers
 import {
   signUpController,
@@ -13,12 +14,12 @@ import {
 
 const router = Router();
 
+// Local Auth Routes
 router.post(
   "/signup",
   signUpValidation,
   authValidationResultHandler,
   signUpController,
-  logIncontroller,
 );
 
 router.post(
@@ -27,4 +28,22 @@ router.post(
   authValidationResultHandler,
   logIncontroller,
 );
+
+// Discord Auth Routes
+
+router.get("/discord", passport.authenticate("discord"));
+router.get(
+  "/discord/callback",
+  passport.authenticate("discord", {
+    failureRedirect: "/api/auth/discord/failed",
+    successRedirect: "/api/auth/discord/success",
+  }),
+);
+
+router.get("/discord/success", (req, res) => {
+  res.send("Discord authentication successful\n" + JSON.stringify(req.user));
+});
+router.get("/discord/failed", (req, res) => {
+  res.send("Discord authentication Failed");
+});
 export default router;

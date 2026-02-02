@@ -6,6 +6,23 @@ export const hashPassword = async (password) => {
   return await bcrypt.hash(password, salt);
 };
 
+export const createUser = async (userData) => {
+  const { data: user, error } = await supabase
+    .from("users")
+    .insert({
+      username: userData.username,
+      provider: userData.provider || null,
+      provider_id: userData.providerId || null,
+      role: userData.role || "customer",
+      password: userData.password
+        ? await hashPassword(userData.password)
+        : null,
+    })
+    .select()
+    .single();
+  return { user, error };
+};
+
 export const findUserByUsername = async (username) => {
   const { data: user, error } = await supabase
     .from("users")

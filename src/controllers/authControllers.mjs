@@ -38,10 +38,10 @@ export const signUpController = async (req, res, next) => {
         details: insertError.message,
       });
     }
-    // Here we used next for the login controller to handle login after signup
-    role ? res.status(201).json({ message: "User created", user }) : next();
+
+    res.status(201).json({ message: "User created", user });
   } catch (err) {
-    console.error("Signup controller crash:", err);
+    console.error("Error in signup controller:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
