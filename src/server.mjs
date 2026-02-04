@@ -10,6 +10,12 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import compression from "compression";
 
+import http from "http";
+import { createWebSocketServer } from "./websockets/web-socket-server.mjs";
+
+// real time subscriptions imports
+import { subscribeOrdersRealtime } from "./websockets/tables-realtime/orders.mjs";
+
 import passport from "passport";
 import "./strategies/localStrategy.mjs";
 import "./strategies/discordStrategy.mjs";
@@ -21,9 +27,9 @@ import { redis } from "./db/redis.mjs";
 import helmet from "helmet";
 
 // MiddleWares
-// app.set("trust proxy", 1);
-// app.use(helmet());
-// app.use(compression());
+app.set("trust proxy", 1);
+app.use(helmet());
+app.use(compression());
 app.use(express.json());
 app.use(cookieParser(SECRET));
 app.use(
@@ -46,11 +52,16 @@ app.use(passport.session());
 // Router
 app.use("/api", routers);
 
-app.get("/", (req, res) => {
-  res.send("Yalla API is Running...");
-});
+// ===== Websocket setup ======
+
+// create HTTP server from express
+const server = http.createServer(app);
+export const wss = createWebSocketServer(server); // custom function imported from another file
+
+// Subscribe to real-time updates
+subscribeOrdersRealtime();
 
 // Listner
-app.listen(Port, () => {
+server.listen(Port, () => {
   console.log("Running in Port: ", Port);
 });
